@@ -42,7 +42,7 @@
                              :style="{backgroundImage: 'url(..//level/master' + (skill.skill_level - 7) + '.png)'}"></div>
                         <span v-else>{{ skill.skill_level }}</span>
                     </td>
-                    <td v-html="colorSpan(skill.description)"></td>
+                    <td v-html="skill.description"></td>
                     <td style="text-align: center">{{ skill.sp_init }}/{{ skill.sp_cost }}</td>
                     <td style="text-align: center">{{ skill.duration > 0 ? skill.duration : '无' }}</td>
                     <td>
