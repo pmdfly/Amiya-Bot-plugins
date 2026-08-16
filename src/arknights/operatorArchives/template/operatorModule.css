@@ -118,7 +118,7 @@ body {
 .option {
     padding-left: 20px;
     color: #202020;
-    font-size: 0;
+    /* font-size: 0; */
 }
 
 .talent {
