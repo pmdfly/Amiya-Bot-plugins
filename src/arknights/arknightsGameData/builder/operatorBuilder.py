@@ -503,18 +503,56 @@ class Collection:
         cls.tokens_map = {}
 
 
+def convert_color_tag(text: str) -> str:
+    """
+    将 <color=#FF6237>{0}</color>
+    转换为 <span style="color: #FF6237; font-size: inherit">
+    """
+    pattern = r'<color=(#[0-9A-Fa-f]{6})>\{0\}</color>'
+    match = re.match(pattern, text.strip())
+    if match:
+        color = match.group(1)
+        return f'<span style="color: {color}; font-size: inherit">'
+    return text
+
+
 def html_tag_format(text: str):
     if text is None:
         return ''
+    rich_text_styles = JsonData.get_json_data('gamedata_const')['richTextStyles']
+    convert_dict = {
+        '</>': '</span>',
+        '\\n': '<br>',
+        '\n': '<br>',
+    }
 
-    for o, f in html_symbol.items():
+    for key, value in rich_text_styles.items():
+        new_key = f"<@{key}>"
+        new_value = convert_color_tag(value)
+        convert_dict[new_key] = new_value
+
+    for o, f in convert_dict.items():
         text = text.replace(o, f)
 
-    return remove_xml_tag(text)
+    # 将中文字符前的 '<' 替换为 '&lt;'
+    text = re.sub(r'<(?=[\u4e00-\u9fa5])', '&lt;', text)   
+    # 将中文字符后的 '>' 替换为 '&gt;'
+    text = re.sub(r'(?<=[\u4e00-\u9fa5])>', '&gt;', text)
+
+    # 将<$ba.+>替换为下划线
+    pattern = r'<\$ba\.[^>]+>'
+    replacement = '<span style="text-decoration: underline; font-size: inherit">'
+    text = re.sub(pattern, replacement, text)
+
+    return text
 
 
 def parse_template(blackboard: list, description: str):
-    formatter = {'0%': lambda v: f'{round(v * 100)}%'}
+    formatter = {
+        '0%': lambda v: f'{round(v * 100)}%',
+        # 修复带小数点的百分比
+        '0.0%': lambda v: f'{v * 100:.1f}%'
+    }
     data_dict = {item['key']: item.get('valueStr') or item.get('value') for index, item in enumerate(blackboard)}
 
     desc = html_tag_format(description.replace('>-{', '>{'))
@@ -529,9 +567,10 @@ def parse_template(blackboard: list, description: str):
                 if len(key) >= 2 and key[1] in formatter and value:
                     value = formatter[key[1]](value)
 
-                desc = desc.replace(desc_item[0], f' [cl {value}@#174CC6 cle] ')
+                desc = desc.replace(desc_item[0], f'{value}')
 
     return desc
+
 
 
 def build_range(grids):
