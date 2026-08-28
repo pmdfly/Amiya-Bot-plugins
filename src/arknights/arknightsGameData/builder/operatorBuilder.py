@@ -520,6 +520,7 @@ def html_tag_format(text: str):
     if text is None:
         return ''
     rich_text_styles = JsonData.get_json_data('gamedata_const')['richTextStyles']
+    term_description_dict = JsonData.get_json_data('gamedata_const')['termDescriptionDict']
     convert_dict = {
         '</>': '</span>',
         '\\n': '<br>',
@@ -539,10 +540,11 @@ def html_tag_format(text: str):
     # 将中文字符后的 '>' 替换为 '&gt;'
     text = re.sub(r'(?<=[\u4e00-\u9fa5])>', '&gt;', text)
 
-    # 将<$ba.+>替换为下划线
-    pattern = r'<\$ba\.[^>]+>'
-    replacement = '<span style="text-decoration: underline; font-size: inherit">'
-    text = re.sub(pattern, replacement, text)
+    # 将术语标签替换为下划线
+    for key in term_description_dict:
+        placeholder = f"<${key}>"
+        if placeholder in text:
+            text = text.replace(placeholder, f'<span style="text-decoration: underline; font-size: inherit">')
 
     return text
 
@@ -570,7 +572,6 @@ def parse_template(blackboard: list, description: str):
                 desc = desc.replace(desc_item[0], f'{value}')
 
     return desc
-
 
 
 def build_range(grids):
