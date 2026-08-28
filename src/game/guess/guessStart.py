@@ -223,13 +223,18 @@ async def guess_start(
             if level == '初级':
                 res = cropper.expand(int(cropper.image.size[0] * 0.2))
                 if res:
-                    await data.send(reply.text(text))
-                    await data.send(
-                        Chain(answer, at=False).text('图片再放大一点了哦~').image(cropper.crop(check_transparent=False))
-                    )
+                    reply.text(text).text('\n图片再放大一点了哦~').image(cropper.crop(check_transparent=False))
+                    await data.send(reply)
                     result.set_rate(answer.user_id, -2)
                 else:
-                    await data.send(reply.text('不能继续放大了 >.<'))
+                    if tips:
+                        reply.text(text).text('\n').text(random_pop(tips))
+                        if not tips:
+                            reply.text('\n提示用完啦！请注意，下一次就是终极提示了，博士，请加油哦！')
+                        await data.send(reply)
+                        result.set_rate(answer.user_id, -2)
+                    else:
+                        await data.send(reply.text('不能继续放大了 >.<'))
             else:
                 if tips or not final_tips:
                     if tips:
