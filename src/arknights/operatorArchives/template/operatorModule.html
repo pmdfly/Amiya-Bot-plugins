@@ -60,9 +60,9 @@
                             <template v-for="part in stage.parts">
                                 <template v-for="item in part.overrideTraitDataBundle.candidates || []">
                                     <div class="option" v-if="item.additionalDescription"
-                                         v-html="colorSpan(item.additionalDescription)"></div>
+                                         v-html="item.additionalDescription"></div>
                                     <div class="option" v-if="item.overrideDescripton"
-                                         v-html="colorSpan(item.overrideDescripton)"></div>
+                                         v-html="item.overrideDescripton"></div>
                                 </template>
                             </template>
                         </div>
@@ -73,7 +73,7 @@
                                           v-if="item.name">
                                     <div class="option">
                                         <div class="sub-title h4"><span>{{ name }}</span></div>
-                                        <span v-html="colorSpan(item.upgradeDescription)"></span>
+                                        <span v-html="item.upgradeDescription"></span>
                                     </div>
                                 </template>
                             </template>
