@@ -174,10 +174,11 @@ class OperatorImpl(Operator):
         talents = []
         if self.data['talents']:
             for item in self.data['talents']:
-                max_item = item['candidates'][-1]
-                talents.append(
-                    {'talents_name': max_item['name'], 'talents_desc': html_tag_format(max_item['description'])}
-                )
+                if item['candidates']:
+                    max_item = item['candidates'][-1]
+                    talents.append(
+                        {'talents_name': max_item['name'], 'talents_desc': html_tag_format(max_item['description'])}
+                    )
 
         return talents
 
@@ -536,7 +537,7 @@ def html_tag_format(text: str):
         text = text.replace(o, f)
 
     # 将中文字符前的 '<' 替换为 '&lt;'
-    text = re.sub(r'<(?=[\u4e00-\u9fa5])', '&lt;', text)   
+    text = re.sub(r'<(?=[\u4e00-\u9fa5])', '&lt;', text)
     # 将中文字符后的 '>' 替换为 '&gt;'
     text = re.sub(r'(?<=[\u4e00-\u9fa5])>', '&gt;', text)
 
